@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>1A2B Guessing Game</title>
+</head>
+<body>
+  <h1>113306060_HW6_1A2B</h1>
+  <div>
+    <input type="text" id="guessInput" placeholder="請輸入4個不重複的數字">
+    <button onclick="submitGuess()">猜!</button>
+  </div>
+  <div id="gameLog">
+    <h2>遊戲紀錄：</h2>
+  </div>
+  <script>
+  function generateSecretNumber() {
+    const digits = Array.from({ length: 10 }, (_, i) => i);
+    const secret = [];
+    while (secret.length < 4) {
+      const randomIndex = Math.floor(Math.random() * digits.length);
+      secret.push(digits.splice(randomIndex, 1)[0]);
+    }
+    return secret;
+  }
+
+  const secretNumber = generateSecretNumber(); 
+  let attempts = 0; 
+
+  function isValidGuess(input) {
+    if (input.length !== 4 || isNaN(input)) return false;
+    const digits = input.split("");
+    return new Set(digits).size === 4; 
+  }
+
+  function calculateResult(secret, guess) {
+    let aCount = 0, bCount = 0;
+    const secretArray = secret.map(String);
+    const guessArray = guess.split("");
+
+    guessArray.forEach((digit, index) => {
+      if (digit === secretArray[index]) {
+        aCount++;
+      } else if (secretArray.includes(digit)) {
+        bCount++;
+      }
+    });
+
+    return `${aCount}A${bCount}B`;
+  }
+
+  
+  function submitGuess() {
+    const guessInput = document.getElementById("guessInput");
+    const guess = guessInput.value;
+  
+    if (!isValidGuess(guess)) {
+      alert("請輸入 4 個不重複的數字！");
+      guessInput.value = ""; 
+      return;
+    }
+
+    attempts++;
+    const result = calculateResult(secretNumber, guess);
+
+    const gameLog = document.getElementById("gameLog");
+    const logEntry = document.createElement("p");
+    logEntry.textContent = `第 ${attempts} 次：${guess} -> ${result}`;
+    gameLog.appendChild(logEntry);
+
+    if (result === "4A0B") {
+      alert(`恭喜答對！總共猜了 ${attempts} 次。`);
+      guessInput.disabled = true; 
+      document.querySelector("button").disabled = true; 
+    } else {
+      guessInput.value = ""; 
+    }
+  }
+  </script>
+</body>
+</html>
